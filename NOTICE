@@ -1,3 +1,35 @@
+MODIFICATION AND LICENSE NOTICE
+
+This software is based on FModel from https://github.com/TheBlindeFortnite/FModel/
+which is licensed under GNU General Public License v3.0 (GPL-3.0).
+
+All modifications, changes, additions, and removals made to the original software 
+on or after March 27, 2025 are our own work and are not endorsed by or affiliated 
+with the original authors. These modifications are licensed under the GNU Affero 
+General Public License v3.0 (AGPL-3.0).
+
+This results in a combined work where:
+- Original code remains under GPL-3.0
+- Our modifications are under AGPL-3.0
+- The combined work as a whole must comply with AGPL-3.0 requirements
+
+As required by Section 13 of GPL-3.0, this combined licensing is permitted, but 
+the special requirements of AGPL-3.0 Section 13 concerning interaction through 
+a network will apply to the combined work. This means that if users interact with 
+this software over a network, you must provide them the opportunity to receive 
+the source code of the entire application.
+
+All original copyright notices, attributions, and third-party licenses remain in 
+effect as documented in the LICENSE and NOTICE files.
+
+This modified version is maintained by:
+- TheBlindeFortnite, otherwise known as ShotgunSpoon or SpectreSpoon
+- GreenBean, or otherwise known as GreenBeanGravy 
+
+
+---------------------------------------------------------------------------
+
+
 This software includes material developed by the following third-party libraries:
 
 - Adonis UI (https://github.com/benruehl/adonis-ui/blob/master/LICENSE) - Copyright (c) 2018 Benjamin Rühl. Licensed under the MIT License.
