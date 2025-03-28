@@ -30,4 +30,4 @@ For installation, follow the instructions from [here](https://github.com/4sval/F
 </p>
 
 ### License:
-FModel is licensed under [GPL-3](https://github.com/4sval/FModel/blob/dev/LICENSE), and licenses of third-party libraries used are listed [here](https://github.com/4sval/FModel/blob/dev/NOTICE).
+FModel is licensed under [GPL-3](https://github.com/4sval/FModel/blob/dev/LICENSE), and licenses of third-party libraries used are listed [here](https://github.com/4sval/FModel/blob/dev/NOTICE). Any and all modifications made to this fork of FModel after 3/27/2025 are subject to the terms under the NOTICE distributed with the software.
