@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using CUE4Parse.Utils;
@@ -11,6 +13,7 @@ using FModel.Services;
 using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using SkiaSharp;
+using TabItem = FModel.ViewModels.TabItem;
 
 namespace FModel.Views.Resources.Controls;
 
@@ -46,6 +49,70 @@ public partial class AvalonEditor
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
 
         ApplicationService.ApplicationView.CUE4Parse.TabControl.OnTabRemove += OnTabClose;
+
+        // Setup accessibility improvements
+        SetupAccessibility();
+    }
+
+    private void SetupAccessibility()
+    {
+        // Make the editor accessible
+        AccessibilityHelper.MakeElementAccessible(MyAvalonEditor,
+            "Code Editor",
+            "Edit code. Press F6 to exit the editor. Use standard editor shortcuts.");
+
+        // Add F6 key to exit
+        MyAvalonEditor.KeyDown += (s, e) => {
+            if (e.Key == Key.F6)
+            {
+                e.Handled = true;
+
+                // Find a focusable parent element
+                DependencyObject parent = this;
+                while (parent != null && !(parent is TabControl) && !(parent is ListBox))
+                {
+                    parent = VisualTreeHelper.GetParent(parent);
+                }
+
+                if (parent is FrameworkElement parentElement)
+                {
+                    parentElement.Focus();
+                }
+                else
+                {
+                    // Try to focus on main window elements
+                    var mainWindow = Application.Current.MainWindow as MainWindow;
+                    if (mainWindow?.DirectoryFilesListBox != null)
+                    {
+                        mainWindow.DirectoryFilesListBox.Focus();
+                    }
+                }
+            }
+        };
+
+        // Ensure keyboard navigation works properly
+        KeyboardNavigation.SetTabNavigation(MyAvalonEditor, KeyboardNavigationMode.Cycle);
+        KeyboardNavigation.SetControlTabNavigation(MyAvalonEditor, KeyboardNavigationMode.Cycle);
+
+        // Ensure screen reader can access search box
+        if (WpfSuckMyDick != null)
+        {
+            AccessibilityHelper.MakeElementAccessible(WpfSuckMyDick,
+                "Search Text",
+                "Enter text to search. Press Enter to find next, Shift+Enter to find previous, Escape to close search.");
+        }
+
+        // Make context menu accessible if it exists
+        if (MyAvalonEditor.ContextMenu != null)
+        {
+            AccessibilityHelper.MakeElementAccessible(MyAvalonEditor.ContextMenu,
+                "Editor Context Menu",
+                "Contains options for text editing");
+        }
+
+        // Add AutomationProperties to support screen readers
+        AutomationProperties.SetIsColumnHeader(MyAvalonEditor, false);
+        AutomationProperties.SetItemStatus(MyAvalonEditor, "Press F6 to exit editor");
     }
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -68,13 +135,15 @@ public partial class AvalonEditor
             case Key.System: // Alt
                 if (Keyboard.IsKeyDown(Key.Left))
                 {
-                    if (_caretsOffsets.Count == 0) return;
+                    if (_caretsOffsets.Count == 0)
+                        return;
                     MyAvalonEditor.CaretOffset = _caretsOffsets.MovePrevious;
                     MyAvalonEditor.TextArea.Caret.BringCaretToView();
                 }
                 else if (Keyboard.IsKeyDown(Key.Right))
                 {
-                    if (_caretsOffsets.Count == 0) return;
+                    if (_caretsOffsets.Count == 0)
+                        return;
                     MyAvalonEditor.CaretOffset = _caretsOffsets.MoveNext;
                     MyAvalonEditor.TextArea.Caret.BringCaretToView();
                 }
@@ -86,11 +155,13 @@ public partial class AvalonEditor
     private void OnMouseHover(object sender, MouseEventArgs e)
     {
         var pos = MyAvalonEditor.GetPositionFromPoint(e.GetPosition(MyAvalonEditor));
-        if (pos == null) return;
+        if (pos == null)
+            return;
 
         var line = MyAvalonEditor.Document.GetLineByNumber(pos.Value.Line);
         var m = _hexColorRegex.Match(MyAvalonEditor.Document.GetText(line.Offset, line.Length));
-        if (!m.Success || !m.Groups.TryGetValue("target", out var g)) return;
+        if (!m.Success || !m.Groups.TryGetValue("target", out var g))
+            return;
 
         var color = SKColor.Parse(g.Value);
         _toolTip.PlacementTarget = this; // required for property inheritance
@@ -124,7 +195,8 @@ public partial class AvalonEditor
         if (!_savedCarets.ContainsKey(avalonEditor.Document.FileName))
             _ignoreCaret = true;
 
-        if (!tabItem.ShouldScroll) return;
+        if (!tabItem.ShouldScroll)
+            return;
 
         var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger);
         var line = avalonEditor.Document.GetLineByNumber(lineNumber);
@@ -164,7 +236,8 @@ public partial class AvalonEditor
             r = GetRegEx();
             viewModel.SearchUp = !viewModel.SearchUp;
         }
-        else r = GetRegEx();
+        else
+            r = GetRegEx();
 
         var rightToLeft = r.Options.HasFlag(RegexOptions.RightToLeft);
         var m = r.Match(MyAvalonEditor.Text, rightToLeft ? MyAvalonEditor.SelectionStart : MyAvalonEditor.SelectionStart + MyAvalonEditor.SelectionLength);
@@ -181,7 +254,8 @@ public partial class AvalonEditor
             do
             {
                 m = rightToLeft ? r.Match(MyAvalonEditor.Text, MyAvalonEditor.Text.Length - 1) : r.Match(MyAvalonEditor.Text, 0);
-                if (!m.Success) continue;
+                if (!m.Success)
+                    continue;
                 MyAvalonEditor.Select(m.Index, m.Length);
                 MyAvalonEditor.TextArea.Caret.BringCaretToView();
                 break;
